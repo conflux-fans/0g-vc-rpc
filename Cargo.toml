@@ -1,0 +1,8 @@
+[package]
+name = "zg-vc-rpc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+jsonrpc-core = "18.0.0"
+jsonrpc-http-server = "18.0.0"
