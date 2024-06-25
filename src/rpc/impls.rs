@@ -1,12 +1,13 @@
 use std::env;
 use std::collections::HashMap;
 
-use jsonrpc_core::Result;
+use jsonrpc_core::{Result, Error};
 
 use num_bigint::BigInt;
 use ark_bn254::Fr;
 use ark_std::rand::thread_rng;
 use vc_prove::prove_backend::{cal_witness, gen_proof, ver_proof};
+use const_hex::decode;
 
 use crate::types::{VcFr, VcProof, VcProvingKey, GrothBn};
 use crate::rpc::api::ZgVc;
@@ -16,11 +17,12 @@ pub struct RpcImpl;
 impl ZgVc for RpcImpl {
     fn generate_proof(
         &self,
-        encoded_vc: Vec<u8>,
+        encoded_vc: String,
         birth_date_threshold: u64,
         path_elements: Vec<u64>,
         path_indices: Vec<u64>,
     ) -> Result<(VcProof, VcProvingKey, Vec<VcFr>)> {
+        let encoded_vc = decode(encoded_vc).map_err(|e| Error::invalid_params(format!("encoded_vc invalid {e}")))?;
         let mut inputs = HashMap::new();
         inputs.insert(
             "encodedVC".to_string(),
