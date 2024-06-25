@@ -1,16 +1,16 @@
-use std::env;
 use std::collections::HashMap;
+use std::env;
 
-use jsonrpc_core::{Result, Error};
+use jsonrpc_core::{Error, Result};
 
-use num_bigint::BigInt;
 use ark_bn254::Fr;
 use ark_std::rand::thread_rng;
-use vc_prove::prove_backend::{cal_witness, gen_proof, ver_proof};
 use const_hex::decode;
+use num_bigint::BigInt;
+use vc_prove::prove_backend::{cal_witness, gen_proof, ver_proof};
 
-use crate::types::{VcFr, VcProof, VcProvingKey, GrothBn};
 use crate::rpc::api::ZgVc;
+use crate::types::{GrothBn, VcFr, VcProof, VcProvingKey};
 
 pub struct RpcImpl;
 
@@ -22,7 +22,8 @@ impl ZgVc for RpcImpl {
         path_elements: Vec<u64>,
         path_indices: Vec<u64>,
     ) -> Result<(VcProof, VcProvingKey, Vec<VcFr>)> {
-        let encoded_vc = decode(encoded_vc).map_err(|e| Error::invalid_params(format!("encoded_vc invalid {e}")))?;
+        let encoded_vc = decode(encoded_vc)
+            .map_err(|e| Error::invalid_params(format!("encoded_vc invalid {e}")))?;
         let mut inputs = HashMap::new();
         inputs.insert(
             "encodedVC".to_string(),
@@ -55,10 +56,7 @@ impl ZgVc for RpcImpl {
             GrothBn::generate_random_parameters_with_reduction(circuit.clone(), &mut rng).unwrap();
         let proof = gen_proof(circuit, &params, &mut rng);
 
-        let public_inputs: Vec<VcFr> = pub_in
-            .into_iter()
-            .map(|x| VcFr(x))
-            .collect();
+        let public_inputs: Vec<VcFr> = pub_in.into_iter().map(|x| VcFr(x)).collect();
 
         Ok((VcProof(proof), VcProvingKey(params), public_inputs))
     }
@@ -74,5 +72,3 @@ impl ZgVc for RpcImpl {
         Ok(result)
     }
 }
-
-

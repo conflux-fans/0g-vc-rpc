@@ -1,13 +1,13 @@
 use ark_bn254::Bn254;
+use ark_ec::pairing::Pairing;
 use ark_groth16::{ProvingKey, VerifyingKey};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
-use serde::de::{self, Deserializer, Visitor};
-use serde::ser::{Serializer, Error};
-use serde::{Deserialize, Serialize};
-use ark_ec::pairing::Pairing;
-use const_hex::{encode, decode};
-use std::fmt;
+use const_hex::{decode, encode};
 use jsonrpc_http_server::hyper::body::Buf;
+use serde::de::{self, Deserializer, Visitor};
+use serde::ser::{Error, Serializer};
+use serde::{Deserialize, Serialize};
+use std::fmt;
 
 pub struct VcProvingKey(pub ProvingKey<Bn254>);
 
@@ -43,7 +43,7 @@ impl<'de> Visitor<'de> for DataVisitor {
     {
         let decoded = decode(value).map_err(de::Error::custom)?;
         let proof = ProvingKey::<Bn254>::deserialize_compressed(decoded.reader())
-                    .map_err(|e| E::custom(e.to_string()))?;
+            .map_err(|e| E::custom(e.to_string()))?;
 
         Ok(VcProvingKey(proof))
     }

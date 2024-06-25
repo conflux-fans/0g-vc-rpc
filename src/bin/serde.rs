@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize, Serializer, Deserializer};
+use base64::{decode, encode};
 use serde::de::{self, Visitor};
-use base64::{encode, decode};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 
 #[derive(Debug, PartialEq)]
@@ -49,7 +49,9 @@ impl<'de> Visitor<'de> for DataVisitor {
 }
 
 fn main() {
-    let data = Data { bytes: vec![104, 101, 108, 108, 111] }; // "hello" in ASCII
+    let data = Data {
+        bytes: vec![104, 101, 108, 108, 111],
+    }; // "hello" in ASCII
 
     // Serialize the Data struct to JSON
     let serialized = serde_json::to_string(&data).unwrap();

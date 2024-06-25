@@ -1,9 +1,8 @@
 mod rpc;
 mod types;
-use rpc::impls::RpcImpl;
-use rpc::api::ZgVc;
 use jsonrpc_http_server::ServerBuilder;
-
+use rpc::api::ZgVc;
+use rpc::impls::RpcImpl;
 
 fn main() {
     let mut io = jsonrpc_core::IoHandler::new();

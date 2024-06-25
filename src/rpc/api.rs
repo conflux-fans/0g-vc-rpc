@@ -1,6 +1,6 @@
+use crate::types::{VcFr, VcProof, VcProvingKey};
 use jsonrpc_core::Result;
 use jsonrpc_derive::rpc;
-use crate::types::{VcFr, VcProof, VcProvingKey};
 
 #[rpc]
 pub trait ZgVc {

@@ -1,10 +1,10 @@
 use ark_bn254::Fr;
-use serde::de::{Deserializer, Visitor, self};
+use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use const_hex::{decode, encode};
+use jsonrpc_http_server::hyper::body::Buf;
+use serde::de::{self, Deserializer, Visitor};
 use serde::ser::{Error, Serializer};
 use serde::{Deserialize, Serialize};
-use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
-use const_hex::{encode, decode};
-use jsonrpc_http_server::hyper::body::Buf;
 use std::fmt;
 
 #[derive(Default)]
@@ -24,8 +24,8 @@ impl<'de> Visitor<'de> for DataVisitor {
         E: de::Error,
     {
         let decoded = decode(value).map_err(de::Error::custom)?;
-        let proof = Fr::deserialize_compressed(decoded.reader())
-                    .map_err(|e| E::custom(e.to_string()))?;
+        let proof =
+            Fr::deserialize_compressed(decoded.reader()).map_err(|e| E::custom(e.to_string()))?;
 
         Ok(VcFr(proof))
     }
