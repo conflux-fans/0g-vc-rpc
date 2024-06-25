@@ -6,7 +6,8 @@ use rpc::impls::RpcImpl;
 
 fn main() {
     let mut io = jsonrpc_core::IoHandler::new();
-    io.extend_with(RpcImpl.to_delegate());
+    let rpc_impl = RpcImpl::new();
+    io.extend_with(rpc_impl.to_delegate());
 
     let server = ServerBuilder::new(io)
         .threads(3)
