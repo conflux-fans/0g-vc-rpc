@@ -14,13 +14,18 @@ impl<'de> Visitor<'de> for DataVisitor {
     type Value = VcBigInt;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a base64 encoded string")
+        formatter.write_str("a hex encoded string")
     }
 
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
+        let value = if value.starts_with("0x") {
+            &value["0x".len()..]
+        } else {
+            value
+        };
         let val =
             BigInt::from_str_radix(value, 16).map_err(|e| de::Error::custom(e.to_string()))?;
 
@@ -42,7 +47,7 @@ impl Serialize for VcBigInt {
     where
         S: Serializer,
     {
-        let hex_str = format!("{:x}", self.0);
+        let hex_str = format!("0x{:x}", self.0);
         serializer.serialize_str(&hex_str)
     }
 }
@@ -61,15 +66,24 @@ mod tests {
 
     #[test]
     fn test_deserialize() {
-        let deserialized: VcBigInt = serde_json::from_str("\"40\"").unwrap();
+        let deserialized: VcBigInt = serde_json::from_str("\"0x40\"").unwrap();
         assert_eq!(deserialized.0, BigInt::from(64));
     }
 
-    // 
+    //
 
     #[test]
     fn test_deserialize_hash() {
-        let deserialized: VcBigInt = serde_json::from_str("\"ece429ff29888bd867beadcb972cb55aea45ed0ec18a1499e6ae01cb71305cf7\"").unwrap();
-        assert_eq!(deserialized.0, BigInt::from_str("107148963247180933655923634663779172825803093478263157203244777036570195680503").unwrap());
+        let deserialized: VcBigInt = serde_json::from_str(
+            "\"0xece429ff29888bd867beadcb972cb55aea45ed0ec18a1499e6ae01cb71305cf7\"",
+        )
+        .unwrap();
+        assert_eq!(
+            deserialized.0,
+            BigInt::from_str(
+                "107148963247180933655923634663779172825803093478263157203244777036570195680503"
+            )
+            .unwrap()
+        );
     }
 }

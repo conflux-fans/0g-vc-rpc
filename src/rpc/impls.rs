@@ -15,6 +15,8 @@ use crate::rpc::api::ZgVc;
 use crate::types::{GrothBn, ProofWithMeta, VcBigInt, VcFr, VcProof};
 
 use ark_circom::CircomCircuit;
+// use chrono::NaiveDate;
+// use vc_prove::VC;
 
 pub struct RpcImpl {
     // circuit: CircomCircuit<Bn254>,
@@ -24,7 +26,8 @@ pub struct RpcImpl {
 
 impl RpcImpl {
     pub fn new() -> Self {
-        let circuit = get_circuit(HashMap::new()).unwrap().0;
+        let inputs = HashMap::new();
+        let circuit = get_circuit(inputs).unwrap().0;
         let mut rng = thread_rng();
         let params =
             GrothBn::generate_random_parameters_with_reduction(circuit.clone(), &mut rng).unwrap();
@@ -46,7 +49,7 @@ impl ZgVc for RpcImpl {
     ) -> Result<ProofWithMeta> {
         let encoded_vc = decode(encoded_vc)
             .map_err(|e| Error::invalid_params(format!("encoded_vc invalid {e}")))?;
-        
+
         let mut inputs = HashMap::new();
         inputs.insert(
             "encodedVC".to_string(),

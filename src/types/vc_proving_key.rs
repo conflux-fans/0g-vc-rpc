@@ -34,7 +34,7 @@ impl<'de> Visitor<'de> for DataVisitor {
     type Value = VcProvingKey;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a base64 encoded string")
+        formatter.write_str("a hex encoded string")
     }
 
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>

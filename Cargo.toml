@@ -2,6 +2,7 @@
 name = "zg-vc-rpc"
 version = "0.1.0"
 edition = "2021"
+default-run = "zg-vc-rpc"
 
 [dependencies]
 jsonrpc-core = "18.0.0"
@@ -24,3 +25,4 @@ base64 = "0.13"
 const-hex = "1.12.0"
 ark-ec = "0.4.1"
 num-traits = "0.2.1"
+chrono = "0.4.38"

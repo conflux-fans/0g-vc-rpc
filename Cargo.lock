@@ -4008,6 +4008,7 @@ dependencies = [
  "ark-serialize 0.4.1",
  "ark-std 0.4.0",
  "base64",
+ "chrono",
  "const-hex",
  "jsonrpc-core",
  "jsonrpc-core-client",
