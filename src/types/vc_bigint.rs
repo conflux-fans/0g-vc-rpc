@@ -50,6 +50,7 @@ impl Serialize for VcBigInt {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str::FromStr;
 
     #[test]
     fn test_serialize() {
@@ -62,5 +63,13 @@ mod tests {
     fn test_deserialize() {
         let deserialized: VcBigInt = serde_json::from_str("\"40\"").unwrap();
         assert_eq!(deserialized.0, BigInt::from(64));
+    }
+
+    // 
+
+    #[test]
+    fn test_deserialize_hash() {
+        let deserialized: VcBigInt = serde_json::from_str("\"ece429ff29888bd867beadcb972cb55aea45ed0ec18a1499e6ae01cb71305cf7\"").unwrap();
+        assert_eq!(deserialized.0, BigInt::from_str("107148963247180933655923634663779172825803093478263157203244777036570195680503").unwrap());
     }
 }

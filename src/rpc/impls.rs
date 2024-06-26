@@ -46,6 +46,7 @@ impl ZgVc for RpcImpl {
     ) -> Result<ProofWithMeta> {
         let encoded_vc = decode(encoded_vc)
             .map_err(|e| Error::invalid_params(format!("encoded_vc invalid {e}")))?;
+        
         let mut inputs = HashMap::new();
         inputs.insert(
             "encodedVC".to_string(),
