@@ -1,8 +1,8 @@
 use ark_bn254::Bn254;
 use ark_circom::CircomBuilder;
 use ark_groth16::{PreparedVerifyingKey, ProvingKey};
-use jsonrpc_core::Result;
 use ark_serialize::CanonicalDeserialize;
+use jsonrpc_core::{Error, Result};
 use std::fs::File;
 
 use crate::rpc::api::ZgVc;
@@ -10,9 +10,13 @@ use crate::types::VcProof;
 
 use vc_prove::{
     circuit::circom_builder,
-    groth16::{prove, setup, verify},
-    types::{Input, PublicInput},
-    params::load_proving_key
+    groth16::{
+        prove,
+        // setup,
+        verify,
+    },
+    params::load_proving_key,
+    types::{ProveInput, VerifyInput},
 };
 
 pub struct RpcImpl {
@@ -32,25 +36,20 @@ impl RpcImpl {
         let vk = PreparedVerifyingKey::<Bn254>::deserialize_uncompressed(reader).unwrap();
         let pk = load_proving_key::<false>(&"output".into(), "check_vc").unwrap();
 
-        Self {
-            vk,
-            pk,
-            circom,
-        }
+        Self { vk, pk, circom }
     }
 }
 
 impl ZgVc for RpcImpl {
-    fn generate_proof(
-        &self,
-        input: Input,
-    ) -> Result<VcProof> {
-        let proof = prove(&self.pk, &self.circom, input);
+    fn generate_proof(&self, input: ProveInput) -> Result<VcProof> {
+        let proof = prove(&self.pk, &self.circom, input)
+            .map_err(|e| Error::invalid_params(e.to_string()))?;
         Ok(VcProof(proof))
     }
 
-    fn verify_proof(&self, proof: VcProof, public_inputs: PublicInput) -> Result<bool> {
-        let result = verify(&self.vk, &proof.0, &public_inputs);
+    fn verify_proof(&self, proof: VcProof, public_inputs: VerifyInput) -> Result<bool> {
+        let result = verify(&self.vk, &proof.0, &public_inputs)
+            .map_err(|e| Error::invalid_params(e.to_string()))?;
         Ok(result)
     }
 }
