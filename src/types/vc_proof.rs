@@ -8,7 +8,7 @@ use serde::ser::{Error, Serializer};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct VcProof(pub Proof<Bn254>);
 
 struct DataVisitor;

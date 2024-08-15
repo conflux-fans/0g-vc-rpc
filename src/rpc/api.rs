@@ -1,13 +1,16 @@
 use crate::types::VcProof;
-use jsonrpc_core::Result;
-use jsonrpc_derive::rpc;
 use vc_prove::types::{ProveInput, VerifyInput};
+use jsonrpsee::proc_macros::rpc;
+use jsonrpsee::types::ErrorObjectOwned;
 
-#[rpc]
+#[rpc(client, server, namespace = "zg")]
 pub trait ZgVc {
-    #[rpc(name = "zg_generateZkProof")]
-    fn generate_proof(&self, input: ProveInput) -> Result<VcProof>;
+    #[method(name = "generateZkProof")]
+    async fn generate_proof(&self, input: ProveInput) -> Result<VcProof, ErrorObjectOwned>;
 
-    #[rpc(name = "zg_verifyZkProof")]
-    fn verify_proof(&self, proof: VcProof, public_inputs: VerifyInput) -> Result<bool>;
+    #[method(name = "verifyZkProof")]
+    async fn verify_proof(&self, proof: VcProof, public_inputs: VerifyInput) -> Result<bool, ErrorObjectOwned>;
+
+    #[method(name = "status")]
+    async fn status(&self, input: String) -> Result<String, ErrorObjectOwned>;
 }
