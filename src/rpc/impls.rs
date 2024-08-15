@@ -8,9 +8,9 @@ use std::sync::mpsc;
 use crate::rpc::api::ZgVcServer;
 use crate::types::VcProof;
 
-use jsonrpsee::types::ErrorObjectOwned;
-use jsonrpsee::types::error::INTERNAL_ERROR_CODE;
 use jsonrpsee::core::async_trait;
+use jsonrpsee::types::error::INTERNAL_ERROR_CODE;
+use jsonrpsee::types::ErrorObjectOwned;
 
 use vc_prove::{
     groth16::verify,
@@ -46,21 +46,21 @@ impl ZgVcServer for RpcImpl {
         Ok(VcProof(proof))
     }
 
-    async fn verify_proof(&self, proof: VcProof, public_inputs: VerifyInput) -> Result<bool, ErrorObjectOwned> {
+    async fn verify_proof(
+        &self,
+        proof: VcProof,
+        public_inputs: VerifyInput,
+    ) -> Result<bool, ErrorObjectOwned> {
         let result = verify(&self.vk, &proof.0, &public_inputs)
             .map_err(|e| jsonrpc_message_error(e.to_string()))?;
         Ok(result)
     }
 
-    async fn status(&self, input: String) -> Result<String, ErrorObjectOwned> {
-        Ok(format!("status: {} is well!", input))
+    async fn echo(&self, input: String) -> Result<String, ErrorObjectOwned> {
+        Ok(format!("Your input is: {}", input))
     }
 }
 
 pub fn jsonrpc_message_error(msg: String) -> ErrorObjectOwned {
-	ErrorObjectOwned::owned(
-		INTERNAL_ERROR_CODE,
-		msg,
-		Some(""),
-	)
+    ErrorObjectOwned::owned(INTERNAL_ERROR_CODE, msg, Some(""))
 }

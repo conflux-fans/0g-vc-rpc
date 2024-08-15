@@ -17,5 +17,6 @@
 
 - zg_generateZkProof
 - zg_verifyZkProof
+- zg_echo: test method
 
 具体方法的参数和返回值请参看 `src/rpc/api.rs::ZgVc` 定义

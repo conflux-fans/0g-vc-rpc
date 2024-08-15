@@ -1,8 +1,8 @@
 use ark_bn254::Bn254;
 use ark_groth16::Proof;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use bytes::Buf;
 use const_hex::{decode, encode};
-use jsonrpc_http_server::hyper::body::Buf;
 use serde::de::{self, Deserializer, Visitor};
 use serde::ser::{Error, Serializer};
 use serde::{Deserialize, Serialize};
