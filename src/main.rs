@@ -11,7 +11,7 @@ use ark_groth16::Proof;
 use rpc::api::ZgVcServer;
 use rpc::impls::RpcImpl;
 use vc_prove::{
-    circuit::circom_builder, groth16::prove, params::load_proving_key, types::ProveInput,
+    circuit::circom_builder, groth16::prove, params::load_proving_key, types::VcProveInput,
 };
 
 use jsonrpsee::server::Server;
@@ -23,7 +23,7 @@ async fn main() -> anyhow::Result<()> {
     let pk = load_proving_key::<false>(&"output".into(), "check_vc")
         .expect("ProvingKey should load success");
 
-    let (tx, rx) = mpsc::channel::<(ProveInput, mpsc::Sender<Proof<Bn254>>)>();
+    let (tx, rx) = mpsc::channel::<(VcProveInput, mpsc::Sender<Proof<Bn254>>)>();
     thread::spawn(move || loop {
         match rx.recv() {
             Ok((input, sender)) => {
