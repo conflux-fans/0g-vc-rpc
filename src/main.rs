@@ -19,6 +19,7 @@ use jsonrpsee::server::Server;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     println!("Loading circom, will take a while...");
+    
     let circom = circom_builder(&"output".into(), "check_vc");
     let pk = load_proving_key::<false>(&"output".into(), "check_vc")
         .expect("ProvingKey should load success");
@@ -35,7 +36,7 @@ async fn main() -> anyhow::Result<()> {
     });
 
     let server = Server::builder()
-        .build("127.0.0.1:0".parse::<SocketAddr>()?)
+        .build("127.0.0.1:3030".parse::<SocketAddr>()?)
         .await?;
     let addr = server.local_addr()?;
     let handle = server.start(RpcImpl::new(tx).into_rpc());
