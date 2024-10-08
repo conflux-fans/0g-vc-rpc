@@ -5,7 +5,7 @@ edition = "2021"
 default-run = "zg-vc-rpc"
 
 [dependencies]
-vc-prove = { path = "../0g-vc" }
+vc-prove = { git = "https://github.com/0glabs/0g-vc.git" }
 
 num-bigint = { version = "=0.4.3", default-features = false, features = ["rand"] }
 num-traits = { version = "=0.2.15", default-features = false }
@@ -35,3 +35,9 @@ tokio = "1.39.2"
 anyhow = "1.0.86"
 bytes = "1.7.1"
 
+[features]
+cuda = ["vc-prove/cuda"]
+
+[patch.crates-io]
+ark-groth16 = { git = "https://github.com/0glabs/0g-groth16-gpu.git", rev = "624806e" }
+ark-circom = { git = "https://github.com/0glabs/circom-compat.git", rev = "87b8855"}

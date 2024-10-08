@@ -11,6 +11,12 @@
 5. 将 zk 电路代码(output 文件夹)复制到本项目目录下
 6. `cargo run --release` 启动项目, 代码默认监听 `3030` 端口
 
+### 开启 GPU 加速
+
+```sh
+cargo run --release --features cuda
+```
+
 ## API
 
 该 RPC 服务提供两个方法:
