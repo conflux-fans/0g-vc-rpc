@@ -43,7 +43,7 @@ async fn main() -> anyhow::Result<()> {
 
     // start server
     let server = Server::builder()
-        .build("127.0.0.1:3030".parse::<SocketAddr>()?)
+        .build("0.0.0.0:3030".parse::<SocketAddr>()?)
         .await?;
     let addr = server.local_addr()?;
     let handle = server.start(RpcImpl::new(tx).into_rpc());
