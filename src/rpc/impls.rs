@@ -2,9 +2,8 @@ use ark_bn254::Bn254;
 use ark_groth16::PreparedVerifyingKey;
 use ark_groth16::Proof;
 use ark_serialize::CanonicalDeserialize;
-use std::fs::File;
-use std::fs::OpenOptions;
-use std::io::Write;
+use std::fs::{File, OpenOptions};
+use std::io::{Error, Write};
 use std::sync::mpsc;
 
 use crate::rpc::api::ZgVcServer;
@@ -41,7 +40,8 @@ impl ZgVcServer for RpcImpl {
         write_log(&format!(
             "generate_proof: {}\n",
             serde_json::to_string(&input).unwrap()
-        ));
+        ))
+        .map_err(|e| jsonrpc_message_error(e.to_string()))?;
 
         let (tx, rx) = mpsc::channel::<Proof<Bn254>>();
         self.sender
@@ -55,7 +55,8 @@ impl ZgVcServer for RpcImpl {
         write_log(&format!(
             "generate_proof result: {}\n",
             serde_json::to_string(&res).unwrap()
-        ));
+        ))
+        .map_err(|e| jsonrpc_message_error(e.to_string()))?;
 
         Ok(res)
     }
@@ -69,11 +70,13 @@ impl ZgVcServer for RpcImpl {
             "verify_proof: proof {} public_inputs {}\n",
             serde_json::to_string(&proof).unwrap(),
             serde_json::to_string(&public_inputs).unwrap()
-        ));
+        ))
+        .map_err(|e| jsonrpc_message_error(e.to_string()))?;
         let result = verify(&self.vk, &proof.0, &public_inputs)
             .map_err(|e| jsonrpc_message_error(e.to_string()))?;
 
-        write_log(&format!("verify_proof result: {}\n", result));
+        write_log(&format!("verify_proof result: {}\n", result))
+            .map_err(|e| jsonrpc_message_error(e.to_string()))?;
         Ok(result)
     }
 
@@ -86,13 +89,12 @@ pub fn jsonrpc_message_error(msg: String) -> ErrorObjectOwned {
     ErrorObjectOwned::owned(INTERNAL_ERROR_CODE, msg, Some(""))
 }
 
-fn write_log(line: &str) {
+fn write_log(line: &str) -> Result<(), Error> {
     // Open the file in append mode
     let mut file = OpenOptions::new()
         .create(true) // Create the file if it doesn't exist
         .append(true) // Open in append mode
-        .open("nohup.log")
-        .expect("Unable to open file");
-    file.write_all(line.as_bytes())
-        .expect("write log should success");
+        .open("nohup.log")?;
+    file.write_all(line.as_bytes())?;
+    Ok(())
 }

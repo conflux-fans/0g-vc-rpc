@@ -49,42 +49,6 @@ async fn main() -> anyhow::Result<()> {
     let handle = server.start(RpcImpl::new(tx).into_rpc());
     println!("Server is listening on: {}", addr);
 
-    // style 1
-    // In this example we don't care about doing shutdown so let's it run forever.
-    // You may use the `ServerHandle` to shut it down or manage it yourself.
-    // EG: monitor the exit signal and shutdown the server
-    // handle.stopped().await;
-
-    // style 2
-    // Set up a signal handler for graceful shutdown
-    // let (shutdown_sender, shutdown_receiver) = tokio::sync::oneshot::channel();
-
-    // // Spawn a task to handle the shutdown signal
-    // tokio::spawn(async move {
-    //     tokio::signal::ctrl_c().await.expect("Failed to listen for ctrl+c");
-    //     println!("Received shutdown signal. Shutting down...");
-    //     shutdown_sender.send(()).expect("Failed to send shutdown signal");
-    // });
-
-    // // Wait for either the server to stop or the shutdown signal
-    // tokio::select! {
-    //     _ = handle.clone().stopped() => {
-    //         println!("Server stopped unexpectedly");
-    //     }
-    //     _ = shutdown_receiver => {
-    //         println!("Initiating graceful shutdown");
-    //         handle.stop()?;
-    //         println!("Server shut down successfully");
-    //     }
-    // }
-
-    // style 3
-    // tokio::signal::ctrl_c()
-    //     .await
-    //     .expect("Failed to listen for ctrl+c");
-    // handle.stop()?;
-
-    // style 4
     let handle_clone = handle.clone();
     tokio::spawn(async move {
         tokio::signal::ctrl_c()
